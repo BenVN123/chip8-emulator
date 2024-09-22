@@ -1,0 +1,58 @@
+#include <stdint.h>
+#include <string.h>
+#include "components.h"
+
+// Define global variables
+const uint16_t START_ADDRESS = 0x200;
+const unsigned int VIDEO_WIDTH = 64;
+const unsigned int VIDEO_HEIGHT = 32;
+const uint16_t FONTSET_START_ADDRESS = 0x50;
+
+uint8_t registers[16] = {0};
+uint8_t memory[4096] = {0};
+uint16_t idx = 0;
+uint16_t pc = START_ADDRESS;
+uint16_t stack[16] = {0};
+uint8_t stack_ptr = 0;
+uint8_t delay = 0;
+uint8_t sound = 0;
+uint8_t keypad[16] = {0};
+uint32_t screen[VIDEO_WIDTH * VIDEO_HEIGHT] = {0};
+uint16_t opcode = 0;
+
+const uint8_t fontset[FONTSET_SIZE] = {
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
+
+// Initialize CHIP-8 state
+void initialize_chip8(void) {
+    memset(memory, 0, sizeof(memory));
+    memcpy(&memory[FONTSET_START_ADDRESS], fontset, FONTSET_SIZE);
+
+    memset(registers, 0, sizeof(registers));
+    memset(stack, 0, sizeof(stack));
+    stack_ptr = 0;
+    delay = 0;
+    sound = 0;
+    idx = 0;
+    pc = START_ADDRESS;
+    memset(screen, 0, sizeof(screen));
+    memset(keypad, 0, sizeof(keypad));
+    opcode = 0;
+}
+
